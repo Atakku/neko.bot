@@ -1,0 +1,19 @@
+[workspace]
+members = ["framework", "hooks/*", "libraries/*", "modules/*", "runtime"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+# neko.bot Framework
+nb_framework = { path = "framework" }
+# neko.bot Hooks
+nbh_fluent = { path = "hooks/nbh_fluent" }
+nbh_sqlx = { path = "hooks/nbh_sqlx" }
+# neko.bot Libraries
+nbl_steam_api = { path = "libraries/nbl_steam_api" }
+# neko.bot Modules
+nbm_steam = { path = "modules/nbm_steam" }
+nbm_vrchat = { path = "modules/nbm_vrchat" }
