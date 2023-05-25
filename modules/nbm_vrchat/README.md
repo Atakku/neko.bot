@@ -1,1 +1,0 @@
-# neko.bot VRChat Module

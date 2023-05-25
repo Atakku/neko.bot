@@ -5,4 +5,13 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-nb_framework.workspace = true
+# neko.bot Framework
+nb_framework = { workspace = true, features = ["core", "plugins"] }
+# neko.bot plugins
+nb_anilist.workspace = true
+nb_discord.workspace = true
+nb_steam.workspace = true
+nb_vrchat.workspace = true
+# External dependencies
+pretty_env_logger.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

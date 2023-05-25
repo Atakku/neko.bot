@@ -4,4 +4,11 @@ version = "0.0.0"
 edition.workspace = true
 license.workspace = true
 
+[features]
+core = ["dep:nbf_core"]
+plugins = ["dep:nbf_plugins"]
+
 [dependencies]
+# neko.bot Framework
+nbf_core = { workspace = true, optional = true }
+nbf_plugins = { workspace = true, optional = true }
