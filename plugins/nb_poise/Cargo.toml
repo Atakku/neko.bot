@@ -10,4 +10,5 @@ nbf = { workspace = true, features = ["plugins"] }
 # neko.bot Plugins
 nb_lifecycle.workspace = true
 # External dependencies
+futures.workspace = true
 poise.workspace = true

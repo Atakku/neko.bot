@@ -2,19 +2,26 @@
 //
 // This project is dual licensed under MIT and Apache.
 
-use std::{
-  env,
-  sync::{Arc, RwLock},
+use std::env;
+
+use futures::future::join_all;
+use nb_lifecycle::{ArcState, ArcStateHelper, LifecycleFramework, LifecyclePlugin};
+use nbf::{Err, Framework, Plugin, PluginLoader, Res, R};
+use poise::{
+  serenity_prelude::{Context as SerenityContext, GatewayIntents},
+  BoxFuture, Command, Context, Event, FrameworkContext, FrameworkOptions,
 };
 
-use nb_lifecycle::{ArcState, LifecycleFramework, LifecyclePlugin};
-use nbf::{Err, Framework, Plugin, PluginLoader, Res, State, R};
-use poise::{serenity_prelude::GatewayIntents, Command, Context, FrameworkOptions};
-
-pub type Poise = poise::Framework<Arc<RwLock<State>>, Err>;
-pub type PoiseBuilder = poise::FrameworkBuilder<Arc<RwLock<State>>, Err>;
-pub type Ctx<'a> = Context<'a, Arc<RwLock<State>>, Err>;
-pub type Cmd = Command<Arc<RwLock<State>>, Err>;
+pub type Poise = poise::Framework<ArcState, Err>;
+pub type PoiseBuilder = poise::FrameworkBuilder<ArcState, Err>;
+pub type Ctx<'a> = Context<'a, ArcState, Err>;
+pub type EventHandler = for<'a> fn(
+  &'a SerenityContext,
+  &'a Event<'a>,
+  FrameworkContext<'a, ArcState, Err>,
+  &'a ArcState,
+) -> BoxFuture<'a, R>;
+pub type Cmd = Command<ArcState, Err>;
 
 pub struct PoisePlugin {
   token: String,
@@ -32,15 +39,28 @@ impl Plugin for PoisePlugin {
   fn init(self, fw: &mut Framework) -> R {
     fw.require_plugin::<LifecyclePlugin>()?;
     fw.state.put(Poise::builder().token(self.token.clone()));
-    fw.state.put(GatewayIntents::empty());
     fw.state.put(Vec::<Cmd>::new());
+    fw.state.put(Vec::<EventHandler>::new());
+    fw.state.put(GatewayIntents::empty());
     fw.main_hook(|state| {
       Box::pin(async move {
         state
-          .take::<PoiseBuilder>()?
-          .intents(state.take::<GatewayIntents>()?)
+          .take::<PoiseBuilder>().await?
+          .intents(state.take::<GatewayIntents>().await?)
           .options(FrameworkOptions {
-            commands: state.take::<Vec<Cmd>>()?,
+            commands: state.take::<Vec<Cmd>>().await?,
+            event_handler: |ctx, e, fctx, h| {
+              Box::pin(async move {
+                let ehs = h.read().await.borrow::<Vec<EventHandler>>()?.clone();
+                join_all(
+                  ehs
+                    .iter()
+                    .map(|eh| (eh)(ctx, e, fctx, h)),
+                )
+                .await;
+                Ok(())
+              })
+            },
             ..Default::default()
           })
           .setup(move |_ctx, _ready, _framework| Box::pin(async move { Ok(state) }))
@@ -62,7 +82,8 @@ impl Plugin for PoisePlugin {
 pub trait PoiseFramework {
   fn add_command(&mut self, cmd: Cmd) -> Res<&mut Framework>;
   fn add_commands(&mut self, cmds: &mut Vec<Cmd>) -> Res<&mut Framework>;
-  fn add_intents(&mut self, cmds: GatewayIntents) -> Res<&mut Framework>;
+  fn add_event_handler(&mut self, eh: EventHandler) -> Res<&mut Framework>;
+  fn add_intents(&mut self, intents: GatewayIntents) -> Res<&mut Framework>;
 }
 
 impl PoiseFramework for Framework {
@@ -73,6 +94,11 @@ impl PoiseFramework for Framework {
 
   fn add_commands(&mut self, cmds: &mut Vec<Cmd>) -> Res<&mut Framework> {
     self.state.borrow_mut::<Vec<Cmd>>()?.append(cmds);
+    Ok(self)
+  }
+
+  fn add_event_handler(&mut self, eh: EventHandler) -> Res<&mut Framework> {
+    self.state.borrow_mut::<Vec<EventHandler>>()?.push(eh);
     Ok(self)
   }
 

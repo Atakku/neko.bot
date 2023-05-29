@@ -14,7 +14,7 @@ async fn main() -> R {
   }
   pretty_env_logger::init();
   let mut fw = Framework::new();
-  fw.init_plugin(nb_steam::SteamPlugin)?;
+  fw.init_plugin(nb_steam::SteamPlugin::default())?;
 
   // WIP
   fw.init_plugin(nb_anilist::AnilistPlugin)?;

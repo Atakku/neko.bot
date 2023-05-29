@@ -4,38 +4,39 @@
 
 #![feature(async_fn_in_trait)]
 
-use std::sync::{Arc, RwLock};
-
 use futures::future::{join_all, LocalBoxFuture};
+use futures_locks::RwLock;
 use nbf::{Framework, Plugin, Res, SharedData, State, R};
 
-pub trait ArcState {
-  fn put<T>(&self, t: T) -> R
+pub type ArcState = RwLock<State>;
+
+pub trait ArcStateHelper {
+  async fn put<T>(&self, t: T) -> R
   where T: SharedData;
-  fn has<T>(&self) -> Res<bool>
+  async fn has<T>(&self) -> Res<bool>
   where T: SharedData;
-  fn take<T>(&self) -> Res<T>
+  async fn take<T>(&self) -> Res<T>
   where T: SharedData;
 }
 
-impl ArcState for Arc<RwLock<State>> {
-  fn put<T>(&self, t: T) -> R
+impl ArcStateHelper for ArcState {
+  async fn put<T>(&self, t: T) -> R
   where T: SharedData {
-    Ok(self.write().map_err(|_| "RwLock is poisoned")?.put(t))
+    Ok(self.write().await.put(t))
   }
 
-  fn has<T>(&self) -> Res<bool>
+  async fn has<T>(&self) -> Res<bool>
   where T: SharedData {
-    Ok(self.read().map_err(|_| "RwLock is poisoned")?.has::<T>())
+    Ok(self.read().await.has::<T>())
   }
 
-  fn take<T>(&self) -> Res<T>
+  async fn take<T>(&self) -> Res<T>
   where T: SharedData {
-    self.write().map_err(|_| "RwLock is poisoned")?.take::<T>()
+    self.write().await.take::<T>()
   }
 }
 
-pub type Hook = fn(Arc<RwLock<State>>) -> LocalBoxFuture<'static, R>;
+pub type Hook = fn(ArcState) -> LocalBoxFuture<'static, R>;
 
 pub struct LifecycleHooks {
   pre: Vec<Hook>,
@@ -92,7 +93,7 @@ impl LifecycleFramework for Framework {
   async fn run(self) -> R {
     let mut state = self.state;
     let hooks = state.take::<LifecycleHooks>()?;
-    let state = Arc::new(RwLock::new(state));
+    let state = RwLock::new(state);
     run_hooks(hooks.pre, &state).await?;
     run_hooks(hooks.main, &state).await?;
     run_hooks(hooks.post, &state).await?;
@@ -100,7 +101,7 @@ impl LifecycleFramework for Framework {
   }
 }
 
-async fn run_hooks(hooks: Vec<Hook>, state: &Arc<RwLock<State>>) -> R {
+async fn run_hooks(hooks: Vec<Hook>, state: &ArcState) -> R {
   for res in join_all(hooks.into_iter().map(|h| (h)(state.clone()))).await {
     res?
   }

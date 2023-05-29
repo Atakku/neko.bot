@@ -3,7 +3,7 @@
 // This project is dual licensed under MIT and Apache.
 
 use std::{
-  any::{Any, TypeId},
+  any::{type_name, Any, TypeId},
   collections::HashMap,
   hash::{BuildHasherDefault, Hasher},
 };
@@ -62,11 +62,10 @@ impl State {
 
   pub fn borrow<T>(&self) -> Res<&T>
   where T: SharedData {
-    Ok(
-      self
-        .try_borrow()
-        .ok_or("Required type is not present in State container")?,
-    )
+    Ok(self.try_borrow().ok_or(format!(
+      "Required type {} is not present in State container",
+      type_name::<T>()
+    ))?)
   }
 
   pub fn borrow_or_default<T>(&mut self) -> Res<&T>
@@ -87,11 +86,10 @@ impl State {
 
   pub fn borrow_mut<T>(&mut self) -> Res<&mut T>
   where T: SharedData {
-    Ok(
-      self
-        .try_borrow_mut()
-        .ok_or("Required type is not present in State container")?,
-    )
+    Ok(self.try_borrow_mut().ok_or(format!(
+      "Required type {} is not present in State container",
+      type_name::<T>()
+    ))?)
   }
 
   pub fn get_mut_or_default<T>(&mut self) -> Res<&mut T>
@@ -113,10 +111,9 @@ impl State {
 
   pub fn take<T>(&mut self) -> Res<T>
   where T: SharedData {
-    Ok(
-      self
-        .try_take()
-        .ok_or("required type is not present in State container")?,
-    )
+    Ok(self.try_take().ok_or(format!(
+      "Required type {} is not present in State container",
+      type_name::<T>()
+    ))?)
   }
 }
