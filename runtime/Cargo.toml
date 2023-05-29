@@ -6,10 +6,11 @@ license.workspace = true
 
 [dependencies]
 # neko.bot Framework
-nb_framework = { workspace = true, features = ["core", "plugins"] }
+nbf = { workspace = true, features = ["core", "plugins", "types"] }
 # neko.bot plugins
 nb_anilist.workspace = true
 nb_discord.workspace = true
+nb_lifecycle.workspace = true
 nb_steam.workspace = true
 nb_vrchat.workspace = true
 # External dependencies

@@ -4,9 +4,15 @@
 
 use nbf::{Framework, Plugin, R};
 
-pub struct AnilistPlugin;
+pub struct FluentPlugin;
 
-impl Plugin for AnilistPlugin {
+impl Default for FluentPlugin {
+  fn default() -> Self {
+    Self {}
+  }
+}
+
+impl Plugin for FluentPlugin {
   fn init(self, _: &mut Framework) -> R {
     Ok(())
   }

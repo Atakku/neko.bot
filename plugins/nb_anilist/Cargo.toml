@@ -6,4 +6,4 @@ license.workspace = true
 
 [dependencies]
 # neko.bot Framework
-nb_framework = { workspace = true, features = ["core", "plugins"] }
+nbf = { workspace = true, features = ["plugins"] }

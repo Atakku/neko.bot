@@ -1,14 +1,13 @@
 [package]
-name = "nb_framework"
+name = "nbf"
 version = "0.0.0"
 edition.workspace = true
 license.workspace = true
 
 [features]
-core = ["dep:nbf_core"]
-plugins = ["dep:nbf_plugins"]
+types = []
+state = ["types"]
+core = ["state", "types"]
+plugins = ["core", "types"]
 
 [dependencies]
-# neko.bot Framework
-nbf_core = { workspace = true, optional = true }
-nbf_plugins = { workspace = true, optional = true }

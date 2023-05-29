@@ -4,9 +4,15 @@
 
 use nbf::{Framework, Plugin, R};
 
-pub struct AnilistPlugin;
+pub struct SchedulerPlugin;
 
-impl Plugin for AnilistPlugin {
+impl Default for SchedulerPlugin {
+  fn default() -> Self {
+    Self {}
+  }
+}
+
+impl Plugin for SchedulerPlugin {
   fn init(self, _: &mut Framework) -> R {
     Ok(())
   }

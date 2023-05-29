@@ -1,5 +1,5 @@
 [workspace]
-members = ["framework/nbf_*", "framework", "libraries/nbl_*", "plugins/nb_*", "runtime"]
+members = ["framework", "libraries/nbl_*", "plugins/nb_*", "runtime"]
 resolver = "2"
 
 [workspace.package]
@@ -8,14 +8,17 @@ license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
 # neko.bot Framework
-nb_framework.path = "framework"
-nbf_core.path = "framework/nbf_core"
-nbf_plugins.path = "framework/nbf_plugins"
+nbf.path = "framework"
 # neko.bot Libraries
 nbl_steam_api.path = "libraries/nbl_steam_api"
 # neko.bot Plugins
 nb_anilist.path = "plugins/nb_anilist"
 nb_discord.path = "plugins/nb_discord"
+nb_fluent.path = "plugins/nb_fluent"
+nb_lifecycle.path = "plugins/nb_lifecycle"
+nb_poise.path = "plugins/nb_poise"
+nb_scheduler.path = "plugins/nb_scheduler"
+nb_sqlx.path = "plugins/nb_sqlx"
 nb_steam.path = "plugins/nb_steam"
 nb_vrchat.path = "plugins/nb_vrchat"
 # External dependencies
@@ -33,13 +36,13 @@ poise = { version = "0.5", git = "https://github.com/serenity-rs/poise", branch 
 pretty_env_logger = "0.5"
 regex = "1"
 reqwest = "0.11"
-resvg = "0.33"
+resvg = "0.34"
 ron = "0.8"
 rust-embed = "6.6"
 sea-query = { version = "0.29", git = "https://github.com/SeaQL/sea-query", features = ["backend-postgres", "derive"] }
 sea-query-binder = { version = "0.4", git = "https://github.com/SeaQL/sea-query", features = ["sqlx-postgres", "runtime-tokio-native-tls"] }
 serde = "1"
-serde_with = "1"
-sqlx = { version = "0.6", features = [ "runtime-tokio-native-tls" ] }
+serde_with = "3"
+sqlx = "0.6"
 tokio = "1"
 tokio-cron-scheduler = "0.9"
