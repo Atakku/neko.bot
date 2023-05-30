@@ -2,20 +2,25 @@
 //
 // This project is dual licensed under MIT and Apache.
 
+#![feature(async_closure)]
+
 use std::collections::HashMap;
 
 use chrono::Utc;
 use itertools::Itertools;
 use nb_poise::{Ctx, PoiseFramework};
 use nbf::{Framework, Plugin, PluginLoader, R};
-use nbl_steam_api::{SteamAPI, OwnedGame};
-use sea_query::{Query, PostgresQueryBuilder, OnConflict};
+use nbl_steam_api::{OwnedGame, SteamAPI};
+use sea_query::{OnConflict, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
-use sqlx::{PgPool, FromRow};
+use sqlx::{FromRow, PgPool};
 
 use crate::schema::*;
 
+mod cmd;
+mod query;
 pub mod schema;
+mod ui;
 
 pub struct SteamPlugin {
   pub api_key: String,
@@ -38,10 +43,10 @@ impl Plugin for SteamPlugin {
     fw.require_plugin::<nb_fluent::FluentPlugin>()?;
     fw.require_plugin::<nb_poise::PoisePlugin>()?;
     fw.add_command(update())?;
+    fw.add_command(cmd::steam())?;
     Ok(())
   }
 }
-
 
 #[poise::command(prefix_command, owners_only)]
 async fn update(ctx: Ctx<'_>) -> R {
@@ -67,7 +72,11 @@ async fn refresh_single_steam_user(api: &SteamAPI, p: &PgPool, acc: i64) -> R {
   if let Ok(res) = api.get_owned_games(&acc).await {
     let games = res.response.games;
     refresh_apps(games.iter().collect(), p).await?;
-    refresh_playdata(games.iter().map(move |o| (o.appid, acc, o.playtime_forever)).collect::<Vec<_>>(),
+    refresh_playdata(
+      games
+        .iter()
+        .map(move |o| (o.appid, acc, o.playtime_forever))
+        .collect::<Vec<_>>(),
       p,
     )
     .await?;
@@ -84,18 +93,33 @@ async fn refresh_steam_data(api: &SteamAPI, p: &PgPool) -> R {
     .from(Accounts::Table)
     .build_sqlx(PostgresQueryBuilder);
   let mut games: HashMap<i64, Vec<_>> = HashMap::new();
-  for r in sqlx::query_as_with::<_, AccountRow, _>(&q, v).fetch_all(p).await? {
+  for r in sqlx::query_as_with::<_, AccountRow, _>(&q, v)
+    .fetch_all(p)
+    .await?
+  {
     if let Ok(res) = api.get_owned_games(&r.id).await {
       games.insert(r.id, res.response.games);
     } else {
       log::warn!("Issue updating stats for {0}", r.id);
     }
   }
-  refresh_apps(games.iter().flat_map(|(_, g)| g).unique_by(|g| g.appid).collect(), p).await?;
+  refresh_apps(
+    games
+      .iter()
+      .flat_map(|(_, g)| g)
+      .unique_by(|g| g.appid)
+      .collect(),
+    p,
+  )
+  .await?;
   refresh_playdata(
     games
       .iter()
-      .flat_map(|(&i, g)| g.into_iter().map(move |o| (o.appid, i, o.playtime_forever)).collect::<Vec<_>>())
+      .flat_map(|(&i, g)| {
+        g.into_iter()
+          .map(move |o| (o.appid, i, o.playtime_forever))
+          .collect::<Vec<_>>()
+      })
       .collect(),
     p,
   )
@@ -109,9 +133,16 @@ async fn refresh_apps(apps: Vec<&OwnedGame>, p: &PgPool) -> R {
     let mut q = Query::insert()
       .into_table(Apps::Table)
       .columns([Apps::id, Apps::name])
-      .on_conflict(OnConflict::column(Apps::id).update_column(Apps::name).to_owned())
+      .on_conflict(
+        OnConflict::column(Apps::id)
+          .update_column(Apps::name)
+          .to_owned(),
+      )
       .to_owned();
-    let data: Vec<_> = chunk.into_iter().map(|a| [a.appid.into(), a.name.clone().into()]).collect();
+    let data: Vec<_> = chunk
+      .into_iter()
+      .map(|a| [a.appid.into(), a.name.clone().into()])
+      .collect();
     for row in data {
       q.values(row)?;
     }
@@ -144,12 +175,17 @@ async fn refresh_playdata(playdata: Vec<(i32, i64, i32)>, p: &PgPool) -> R {
       )
       .returning(Query::returning().columns([PlayData::id, PlayData::mins]))
       .to_owned();
-    let data: Vec<_> = chunk.into_iter().map(|p| [p.0.into(), p.1.into(), p.2.into()]).collect();
+    let data: Vec<_> = chunk
+      .into_iter()
+      .map(|p| [p.0.into(), p.1.into(), p.2.into()])
+      .collect();
     for row in data {
       q.values(row)?;
     }
     let (q, v) = q.build_sqlx(PostgresQueryBuilder);
-    let return_data: Vec<_> = sqlx::query_as_with::<_, PlayHistReturn, _>(&q, v).fetch_all(p).await?;
+    let return_data: Vec<_> = sqlx::query_as_with::<_, PlayHistReturn, _>(&q, v)
+      .fetch_all(p)
+      .await?;
     log::trace!("Updated {} playdata entries", chunk.len());
     let mut nq = Query::insert()
       .into_table(PlayHist::Table)

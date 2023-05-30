@@ -45,19 +45,15 @@ impl Plugin for PoisePlugin {
     fw.main_hook(|state| {
       Box::pin(async move {
         state
-          .take::<PoiseBuilder>().await?
+          .take::<PoiseBuilder>()
+          .await?
           .intents(state.take::<GatewayIntents>().await?)
           .options(FrameworkOptions {
             commands: state.take::<Vec<Cmd>>().await?,
             event_handler: |ctx, e, fctx, h| {
               Box::pin(async move {
                 let ehs = h.read().await.borrow::<Vec<EventHandler>>()?.clone();
-                join_all(
-                  ehs
-                    .iter()
-                    .map(|eh| (eh)(ctx, e, fctx, h)),
-                )
-                .await;
+                join_all(ehs.iter().map(|eh| (eh)(ctx, e, fctx, h))).await;
                 Ok(())
               })
             },

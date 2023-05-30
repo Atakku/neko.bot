@@ -11,7 +11,7 @@ use poise::{
 };
 use sea_query::{Cond, Expr, OnConflict, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
-use sqlx::{FromRow, Pool, Postgres, PgPool};
+use sqlx::{FromRow, PgPool, Pool, Postgres};
 
 use crate::schema::*;
 
