@@ -18,6 +18,7 @@ pub fn render_svg<T>(template: T) -> Res<Vec<u8>>
 where T: Template {
   let mut fontdb = fontdb::Database::new();
   fontdb.load_system_fonts();
+  fontdb.load_font_file("font.ttf")?;
 
   let mut tree = Tree::from_str(&template.render()?, &Options::default()).unwrap();
   tree.convert_text(&fontdb);
