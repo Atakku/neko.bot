@@ -19,3 +19,4 @@ Dockerfile
 .vscode
 rustfmt.toml
 .gitignore
+font.ttf

@@ -2,18 +2,22 @@
 //
 // This project is dual licensed under MIT and Apache.
 
-use nbf::{Framework, Plugin, R};
+use std::collections::HashMap;
 
-pub struct FluentPlugin;
+use fluent::{bundle::FluentBundle as GenericFluentBundle, FluentResource};
+use intl_memoizer::concurrent::IntlLangMemoizer;
 
-impl Default for FluentPlugin {
-  fn default() -> Self {
-    Self {}
-  }
-}
+pub type FluentResources = HashMap<String, Vec<FluentResource>>;
+pub type FluentBundle = GenericFluentBundle<FluentResource, IntlLangMemoizer>;
+pub type FluentBundles = HashMap<String, FluentBundle>;
 
-impl Plugin for FluentPlugin {
-  fn init(self, _: &mut Framework) -> R {
-    Ok(())
-  }
-}
+pub(crate) const LOCALES: [&str; 31] = [
+  "id", "da", "de", "en-GB", "en-US", "es-ES", "fr", "hr", "it", "lt", "hu", "nl", "no", "pl",
+  "pt-BR", "ro", "fi", "sv-SE", "vi", "tr", "cs", "el", "bg", "ru", "uk", "hi", "th", "zh-CN",
+  "ja", "zh-TW", "ko",
+];
+
+mod framework;
+pub use framework::*;
+mod plugin;
+pub use plugin::*;

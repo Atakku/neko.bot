@@ -16,3 +16,4 @@ nb_vrchat.workspace = true
 # External dependencies
 pretty_env_logger.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+log = { workspace = true, features = ["release_max_level_warn"] }

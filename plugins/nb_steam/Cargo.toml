@@ -28,3 +28,5 @@ askama.workspace = true
 regex.workspace = true
 resvg.workspace = true
 reqwest.workspace = true
+
+rust-embed.workspace = true
