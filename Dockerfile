@@ -1,4 +1,4 @@
-FROM docker.io/rustlang/rust-slim:nightly as builder
+FROM docker.io/rustlang/rust:nightly-slim as builder
 WORKDIR /build
 RUN apt-get update && apt-get install -y libssl-dev libpq-dev && rm -rf /var/lib/apt/lists/*
 COPY . .
