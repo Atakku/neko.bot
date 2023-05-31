@@ -6,5 +6,5 @@ RUN cargo build
 FROM debian:11-slim
 WORKDIR /app
 RUN apt-get update && apt-get install -y libssl1.1 && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /build/target/release/nb_runtime /app/nekobot
+COPY --from=builder /build/target/debug/nb_runtime /app/nekobot
 CMD ["./nekobot"]
