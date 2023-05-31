@@ -3,6 +3,6 @@ WORKDIR /build
 COPY . .
 RUN cargo build --release
 FROM debian:buster-slim
-WORKDIR /build
+WORKDIR /run
 COPY --from=builder /build/target/release/nb_runtime /usr/local/bin/nb_runtime
 CMD ["nb_runtime"]
