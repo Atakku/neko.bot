@@ -44,9 +44,13 @@ pub async fn test_path<'a>(appid: u32, asset: &'a str) -> R {
     ))
     .await?;
     if req.status() == 200 {
-      if let  Err(err) = std::fs::write(path, Into::<Vec<u8>>::into(req.bytes().await?)) {
-        log::warn!("{err}");
-      }
+      match req.bytes().await {
+        Ok(bytes ) => match std::fs::write(path, bytes) {
+            Ok(_) =>log::warn!("Wrote image from CDN to {}", path.to_str().unwrap_or("null path")),
+            Err(err) => log::error!("{err}"),
+        },
+        Err(err) => log::error!("{err}"),
+    }
     } else {
       log::warn!("No image found on CDN");
     }
