@@ -37,22 +37,13 @@ pub async fn test_path<'a>(appid: u32, asset: &'a str) -> R {
   let path = Path::new(&name);
   std::fs::create_dir_all(format!(".cache/steam/{}", asset))?;
   if !path.exists() {
-    log::info!("Image isn't cached, downloading");
     let req = reqwest::get(format!(
       "https://cdn.cloudflare.steamstatic.com/steam/apps/{}/{}.jpg",
       appid, asset
     ))
     .await?;
     if req.status() == 200 {
-      match req.bytes().await {
-        Ok(bytes ) => match std::fs::write(path, bytes) {
-            Ok(_) =>log::warn!("Wrote image from CDN to {}", path.to_str().unwrap_or("null path")),
-            Err(err) => log::error!("{err}"),
-        },
-        Err(err) => log::error!("{err}"),
-    }
-    } else {
-      log::warn!("No image found on CDN");
+      std::fs::write(path, Into::<Vec<u8>>::into(req.bytes().await?))?;
     }
   }
   Ok(())
