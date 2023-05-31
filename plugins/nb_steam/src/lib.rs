@@ -8,9 +8,11 @@ use std::collections::HashMap;
 
 use chrono::Utc;
 use itertools::Itertools;
+use nb_fluent::FluentFramework;
 use nb_poise::{Ctx, PoiseFramework};
 use nbf::{Framework, Plugin, PluginLoader, R};
 use nbl_steam_api::{OwnedGame, SteamAPI};
+use rust_embed::RustEmbed;
 use sea_query::{OnConflict, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{FromRow, PgPool};
@@ -34,6 +36,11 @@ impl Default for SteamPlugin {
   }
 }
 
+
+#[derive(RustEmbed)]
+#[folder = "locale"]
+struct SteamLocale;
+
 impl Plugin for SteamPlugin {
   fn init(self, fw: &mut Framework) -> R {
     // Technically not needed as we already depend on DiscordPlugin
@@ -41,6 +48,7 @@ impl Plugin for SteamPlugin {
     fw.require_plugin::<nb_discord::DiscordPlugin>()?;
     fw.state.put(SteamAPI::new(&self.api_key));
     fw.require_plugin::<nb_fluent::FluentPlugin>()?;
+    fw.add_fluent_resources::<SteamLocale>()?;
     fw.require_plugin::<nb_poise::PoisePlugin>()?;
     fw.add_command(update())?;
     fw.add_command(cmd::steam())?;
@@ -48,7 +56,7 @@ impl Plugin for SteamPlugin {
   }
 }
 
-#[poise::command(prefix_command, owners_only)]
+#[poise::command(slash_command, owners_only)]
 async fn update(ctx: Ctx<'_>) -> R {
   let state = ctx.data().read().await;
   let api = state.borrow::<SteamAPI>()?.clone();
