@@ -5,7 +5,7 @@
 //TODO: REWRITE
 use std::path::Path;
 
-use askama::Template;
+use askama::{Template, filters::format};
 use nbf::{Res, R};
 use resvg::{
   tiny_skia::{Pixmap, Transform},
@@ -35,8 +35,9 @@ where T: Template {
 pub async fn test_path<'a>(appid: u32, asset: &'a str) -> R {
   let name = format!(".cache/steam/{}/{}.jpg", asset, appid);
   let path = Path::new(&name);
-  std::fs::create_dir_all(".cache/steam/")?;
+  std::fs::create_dir_all(format!(".cache/steam/{}", asset))?;
   if !path.exists() {
+    log::info!("Image isn't cached, downloading");
     let req = reqwest::get(format!(
       "https://cdn.cloudflare.steamstatic.com/steam/apps/{}/{}.jpg",
       appid, asset
@@ -44,6 +45,8 @@ pub async fn test_path<'a>(appid: u32, asset: &'a str) -> R {
     .await?;
     if req.status() == 200 {
       std::fs::write(path, Into::<Vec<u8>>::into(req.bytes().await?))?;
+    } else {
+      log::warn!("No image found on CDN");
     }
   }
   Ok(())
