@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/li
 COPY . .
 RUN cargo build --release
 FROM debian:11-slim
-WORKDIR /run
+WORKDIR /app
 RUN apt-get update && apt-get install -y libssl1.1 && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /build/target/release/nb_runtime /usr/local/bin/nb_runtime
-CMD ["nb_runtime"]
+COPY --from=builder /build/target/release/nb_runtime /app/nekobot
+CMD ["./nekobot"]
