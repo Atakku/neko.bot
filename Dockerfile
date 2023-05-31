@@ -1,6 +1,6 @@
 FROM docker.io/rustlang/rust:nightly-slim as builder
 WORKDIR /build
-RUN apt-get update & apt-get install -y openssl-devel postgresql-dev & rm -rf /var/lib/apt/lists/*
+RUN apt-get update & apt-get install -y libssl-dev postgresql-dev & rm -rf /var/lib/apt/lists/*
 COPY . .
 RUN cargo build --release
 FROM debian:buster-slim
