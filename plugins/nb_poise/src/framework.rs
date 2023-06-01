@@ -2,10 +2,10 @@
 //
 // This project is dual licensed under MIT and Apache.
 
-use nbf::{Res, Framework};
+use nbf::{Framework, Res};
 use poise::serenity_prelude::GatewayIntents;
 
-use crate::{EventHandler, Cmd};
+use crate::{Cmd, EventHandler};
 
 pub trait PoiseFramework {
   fn add_command(&mut self, cmd: Cmd) -> Res<&mut Framework>;

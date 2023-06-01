@@ -26,7 +26,6 @@ mod plugin;
 #[cfg(feature = "plugin")]
 pub use plugin::*;
 
-
 pub trait ArcStateHelper {
   async fn put<T>(&self, t: T) -> R
   where T: SharedData;

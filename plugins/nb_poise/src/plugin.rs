@@ -3,11 +3,11 @@
 // This project is dual licensed under MIT and Apache.
 
 use futures::future::join_all;
-use nb_lifecycle::{LifecyclePlugin, LifecycleFramework, ArcStateHelper};
-use nbf::{Framework, Plugin, R, PluginLoader};
+use nb_lifecycle::{ArcStateHelper, LifecycleFramework, LifecyclePlugin};
+use nbf::{Framework, Plugin, PluginLoader, R};
 use poise::{serenity_prelude::GatewayIntents, FrameworkOptions};
 
-use crate::{EventHandler, Cmd, Ctx, Poise, PoiseBuilder, PoiseFramework};
+use crate::{Cmd, EventHandler, Poise, PoiseBuilder};
 
 pub struct PoisePlugin {
   token: String,
@@ -56,6 +56,7 @@ impl Plugin for PoisePlugin {
     // Only needed for development to register new commands
     #[cfg(debug_assertions)]
     {
+      use crate::PoiseFramework;
       fw.add_intents(GatewayIntents::GUILD_MESSAGES)?;
       fw.add_command(register())?;
     }
@@ -66,7 +67,7 @@ impl Plugin for PoisePlugin {
 /// Registers or unregisters application commands in this guild or globally
 #[poise::command(prefix_command, hide_in_help, owners_only)]
 #[cfg(debug_assertions)]
-async fn register(ctx: Ctx<'_>) -> R {
+async fn register(ctx: crate::Ctx<'_>) -> R {
   poise::samples::register_application_commands_buttons(ctx).await?;
   Ok(())
 }

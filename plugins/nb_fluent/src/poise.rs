@@ -45,7 +45,13 @@ pub(crate) fn localize_commands(state: ArcState) -> HR {
   })
 }
 
-fn apply_cmd_loc(cmd: &mut Cmd, loc: &str, fb: &FluentBundle, parent_path: Option<&str>, log_missing: bool) {
+fn apply_cmd_loc(
+  cmd: &mut Cmd,
+  loc: &str,
+  fb: &FluentBundle,
+  parent_path: Option<&str>,
+  log_missing: bool,
+) {
   let path = format!("{}_{}", parent_path.unwrap_or("cmd"), cmd.name);
   // Skip trying to localize group commands
   if !cmd.subcommand_required {
@@ -62,7 +68,14 @@ fn apply_cmd_loc(cmd: &mut Cmd, loc: &str, fb: &FluentBundle, parent_path: Optio
       if let Some(name) = try_cmd_loc(loc, fb, &path, Some(&prm_path), true, log_missing) {
         prm.name_localizations.insert(loc.into(), name.into());
       }
-      if let Some(desc) = try_cmd_loc(loc, fb, &path, Some(&format!("{prm_path}_desc")), false, log_missing) {
+      if let Some(desc) = try_cmd_loc(
+        loc,
+        fb,
+        &path,
+        Some(&format!("{prm_path}_desc")),
+        false,
+        log_missing,
+      ) {
         prm
           .description_localizations
           .insert(loc.into(), desc.into());
@@ -86,7 +99,7 @@ fn try_cmd_loc<'a>(
   path: &str,
   attr: Option<&str>,
   lc: bool,
-  log_missing: bool
+  log_missing: bool,
 ) -> Option<String> {
   log::trace!("try_cmd_loc()");
   let log_path = attr

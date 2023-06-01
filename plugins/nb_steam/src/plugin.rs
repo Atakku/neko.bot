@@ -7,13 +7,13 @@ use std::collections::HashMap;
 use chrono::Utc;
 use itertools::Itertools;
 use nb_fluent::FluentFramework;
-use nb_poise::{Ctx, PoiseFramework};
+use nb_poise::PoiseFramework;
 use nbf::{Framework, Plugin, PluginLoader, R};
-use nbl_steam_api::{SteamAPI, OwnedGame};
+use nbl_steam_api::{OwnedGame, SteamAPI};
 use rust_embed::RustEmbed;
-use sea_query::{PostgresQueryBuilder, OnConflict, Query};
+use sea_query::{OnConflict, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
-use sqlx::{Postgres, PgPool, FromRow};
+use sqlx::{FromRow, PgPool, Postgres};
 
 use crate::cmd;
 pub use crate::schema::*;
@@ -43,8 +43,6 @@ impl Plugin for SteamPlugin {
     Ok(())
   }
 }
-
-
 
 #[derive(RustEmbed)]
 #[folder = "locale"]

@@ -6,7 +6,7 @@ use futures::future::join_all;
 use futures_locks::RwLock;
 use nbf::{Framework, Res, R};
 
-use crate::{Hook, MainHook, ArcState};
+use crate::{ArcState, Hook, MainHook};
 
 pub struct LifecycleHooks {
   pre: Vec<Hook>,
