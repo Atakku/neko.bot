@@ -24,6 +24,8 @@ pub use plugin::*;
 #[cfg(feature = "poise")]
 mod poise;
 
+// TODO: Move into poise or use somewhere else
+#[allow(dead_code)]
 pub(crate) fn localize<'a>(
   fb: &FluentBundle,
   id: &str,

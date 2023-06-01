@@ -1,3 +1,7 @@
+# Copyright 2023 Atakku <https://atakku.dev>
+#
+# This project is dual licensed under MIT and Apache.
+
 [package]
 name = "nb_fluent"
 version = "0.0.0"
@@ -6,7 +10,7 @@ license.workspace = true
 
 [features]
 framework = ["nbf/framework", "dep:log", "dep:rust-embed"]
-plugin = ["nbf/plugin", "dep:log"]
+plugin = ["nbf/plugin", "nb_lifecycle/framework", "dep:log"]
 poise = ["plugin", "dep:nb_poise", "dep:nb_lifecycle"]
 
 [dependencies]

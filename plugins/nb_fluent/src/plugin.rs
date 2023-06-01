@@ -4,7 +4,6 @@
 
 use std::collections::HashMap;
 
-#[cfg(feature = "poise")]
 use nb_lifecycle::LifecycleFramework;
 use nbf::{Framework, Plugin, R};
 
