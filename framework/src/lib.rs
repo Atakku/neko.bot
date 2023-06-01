@@ -4,22 +4,23 @@
 
 #![feature(trait_alias)]
 
-#[cfg(feature = "core")]
-mod core;
-#[cfg(feature = "core")]
-pub use crate::core::*;
+use std::error::Error;
 
-#[cfg(feature = "plugins")]
-mod plugins;
-#[cfg(feature = "plugins")]
-pub use crate::plugins::*;
+pub type Err = Box<dyn Error + Send + Sync>;
+pub type Res<T> = Result<T, Err>;
+pub type R = Res<()>;
+
+#[cfg(feature = "framework")]
+mod framework;
+#[cfg(feature = "framework")]
+pub use crate::framework::*;
+
+#[cfg(feature = "plugin")]
+mod plugin;
+#[cfg(feature = "plugin")]
+pub use crate::plugin::*;
 
 #[cfg(feature = "state")]
 mod state;
 #[cfg(feature = "state")]
 pub use crate::state::*;
-
-#[cfg(feature = "types")]
-mod types;
-#[cfg(feature = "types")]
-pub use crate::types::*;

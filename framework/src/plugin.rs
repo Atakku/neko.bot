@@ -4,8 +4,8 @@
 
 use std::any::TypeId;
 
-use crate::core::Framework;
-use crate::types::{Res, R};
+use crate::Framework;
+use crate::{Res, R};
 
 pub type PluginIndex = Vec<TypeId>;
 

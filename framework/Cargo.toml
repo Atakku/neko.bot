@@ -5,9 +5,8 @@ edition.workspace = true
 license.workspace = true
 
 [features]
-types = []
-state = ["types"]
-core = ["state", "types"]
-plugins = ["core", "types"]
+state = []
+framework = ["state"]
+plugin = ["framework"]
 
 [dependencies]
