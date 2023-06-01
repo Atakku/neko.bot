@@ -28,7 +28,7 @@ impl Default for DiscordPlugin {
 impl Plugin for DiscordPlugin {
   fn init(self, fw: &mut Framework) -> R {
     fw.require_plugin::<nb_poise::PoisePlugin>()?;
-    fw.require_plugin::<nb_sqlx::SqlxPlugin>()?;
+    fw.require_plugin::<nb_sqlx::SqlxPlugin<Postgres>>()?;
     fw.add_intents(GatewayIntents::GUILDS)?;
     fw.add_intents(GatewayIntents::GUILD_MEMBERS)?;
     fw.add_event_handler(|ctx, e, _fctx, s| {

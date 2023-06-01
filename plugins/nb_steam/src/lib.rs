@@ -15,7 +15,7 @@ use nbl_steam_api::{OwnedGame, SteamAPI};
 use rust_embed::RustEmbed;
 use sea_query::{OnConflict, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
-use sqlx::{FromRow, PgPool};
+use sqlx::{FromRow, PgPool, Postgres};
 
 use crate::schema::*;
 
@@ -43,7 +43,7 @@ struct SteamLocale;
 impl Plugin for SteamPlugin {
   fn init(self, fw: &mut Framework) -> R {
     // Technically not needed as we already depend on DiscordPlugin
-    fw.require_plugin::<nb_sqlx::SqlxPlugin>()?;
+    fw.require_plugin::<nb_sqlx::SqlxPlugin<Postgres>>()?;
     fw.require_plugin::<nb_discord::DiscordPlugin>()?;
     fw.state.put(SteamAPI::new(&self.api_key));
     fw.require_plugin::<nb_fluent::FluentPlugin>()?;

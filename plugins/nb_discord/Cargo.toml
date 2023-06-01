@@ -10,7 +10,7 @@ nbf = { workspace = true, features = ["plugins"] }
 # neko.bot plugins
 nb_lifecycle.workspace = true
 nb_poise.workspace = true
-nb_sqlx.workspace = true
+nb_sqlx = { workspace = true, features = ["plugin", "postgres"] }
 # external dependencies
 log.workspace = true
 poise.workspace = true
