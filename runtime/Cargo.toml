@@ -6,13 +6,13 @@ license.workspace = true
 
 [dependencies]
 # neko.bot framework
-nbf = { workspace = true, features = ["core", "plugins", "types"] }
+nbf = { workspace = true, features = ["plugin"] }
 # neko.bot plugins
-nb_anilist.workspace = true
-nb_discord.workspace = true
-nb_lifecycle.workspace = true
-nb_steam.workspace = true
-nb_vrchat.workspace = true
+nb_anilist = { workspace = true, features = ["plugin"] }
+nb_discord = { workspace = true, features = ["plugin"] }
+nb_lifecycle = { workspace = true, features = ["plugin"] }
+nb_steam = { workspace = true, features = ["plugin"] }
+nb_vrchat = { workspace = true, features = ["plugin"] }
 # external dependencies
 pretty_env_logger.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

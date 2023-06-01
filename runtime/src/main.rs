@@ -2,15 +2,13 @@
 //
 // This project is dual licensed under MIT and Apache.
 
-use std::env;
-
 use nb_lifecycle::LifecycleFramework;
 use nbf::{Framework, PluginLoader, R};
 
 #[tokio::main]
 async fn main() -> R {
-  if !env::var("RUST_LOG").is_ok_and(|f| !f.is_empty()) {
-    env::set_var("RUST_LOG", "warn");
+  if !std::env::var("RUST_LOG").is_ok_and(|f| !f.is_empty()) {
+    std::env::set_var("RUST_LOG", "warn");
   }
   pretty_env_logger::init();
   let mut fw = Framework::new();

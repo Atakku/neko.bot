@@ -4,6 +4,7 @@
 
 //TODO: REWRITE
 use itertools::Itertools;
+use nb_discord::schema::Members;
 use nb_poise::Ctx;
 use nbf::{Err, R};
 use nbl_steam_api::SteamAPI;
@@ -15,7 +16,6 @@ use sea_query_binder::SqlxBinder;
 use sqlx::{FromRow, PgPool};
 
 use crate::{query::paged_query, refresh_single_steam_user, schema::Accounts};
-use nb_discord::schema::Members;
 
 #[poise::command(
   prefix_command,
