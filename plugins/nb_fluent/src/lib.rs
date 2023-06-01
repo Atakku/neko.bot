@@ -4,20 +4,36 @@
 
 use std::collections::HashMap;
 
-use fluent::{bundle::FluentBundle as GenericFluentBundle, FluentResource};
+use fluent::{bundle::FluentBundle as GenericFluentBundle, FluentArgs, FluentResource};
 use intl_memoizer::concurrent::IntlLangMemoizer;
 
 pub type FluentResources = HashMap<String, Vec<FluentResource>>;
 pub type FluentBundle = GenericFluentBundle<FluentResource, IntlLangMemoizer>;
 pub type FluentBundles = HashMap<String, FluentBundle>;
 
-pub(crate) const LOCALES: [&str; 31] = [
-  "id", "da", "de", "en-GB", "en-US", "es-ES", "fr", "hr", "it", "lt", "hu", "nl", "no", "pl",
-  "pt-BR", "ro", "fi", "sv-SE", "vi", "tr", "cs", "el", "bg", "ru", "uk", "hi", "th", "zh-CN",
-  "ja", "zh-TW", "ko",
-];
-
+#[cfg(feature = "framework")]
 mod framework;
+#[cfg(feature = "framework")]
 pub use framework::*;
+
+#[cfg(feature = "plugin")]
 mod plugin;
+#[cfg(feature = "plugin")]
 pub use plugin::*;
+
+#[cfg(feature = "poise")]
+mod poise;
+
+pub(crate) fn localize<'a>(
+  fb: &FluentBundle,
+  id: &str,
+  attr: Option<&str>,
+  args: Option<&FluentArgs<'_>>,
+) -> Option<String> {
+  let message = fb.get_message(id)?;
+  let pattern = match attr {
+    Some(attribute) => message.get_attribute(attribute)?.value(),
+    None => message.value()?,
+  };
+  Some(fb.format_pattern(pattern, args, &mut vec![]).to_string())
+}
