@@ -5,8 +5,8 @@ edition.workspace = true
 license.workspace = true
 
 [features]
-framework = ["nbf/framework", "dep:rust-embed"]
-plugin = ["nbf/plugin"]
+framework = ["nbf/framework", "dep:log", "dep:rust-embed"]
+plugin = ["nbf/plugin", "dep:log"]
 poise = ["plugin", "dep:nb_poise", "dep:nb_lifecycle"]
 
 [dependencies]
@@ -18,5 +18,5 @@ nb_poise = { workspace = true, optional = true }
 # external dependencies
 fluent.workspace = true
 intl-memoizer.workspace = true
-log.workspace = true
+log = { workspace = true, optional = true }
 rust-embed = { workspace = true, optional = true }

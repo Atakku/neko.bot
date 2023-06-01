@@ -7,7 +7,7 @@ use nb_poise::Cmd;
 
 use crate::{localize, FluentBundle, FluentBundles};
 
-pub(crate) const LOCS: [&str; 31] = [
+const LOCS: [&str; 31] = [
   "id", "da", "de", "en-GB", "en-US", "es-ES", "fr", "hr", "it", "lt", "hu", "nl", "no", "pl",
   "pt-BR", "ro", "fi", "sv-SE", "vi", "tr", "cs", "el", "bg", "ru", "uk", "hi", "th", "zh-CN",
   "ja", "zh-TW", "ko",
