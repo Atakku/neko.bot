@@ -1,14 +1,23 @@
+# Copyright 2023 Atakku <https://atakku.dev>
+#
+# This project is dual licensed under MIT and Apache.
+
 [package]
 name = "nb_poise"
 version = "0.0.0"
 edition.workspace = true
 license.workspace = true
 
+[features]
+framework = ["nbf/framework"]
+plugin = ["framework", "nbf/plugin", "dep:futures", "dep:log"]
+
 [dependencies]
 # neko.bot framework
-nbf = { workspace = true, features = ["plugins"] }
+nbf = { workspace = true }
 # neko.bot plugins
-nb_lifecycle.workspace = true
+nb_lifecycle = { workspace = true, features = ["framework", "plugin"] }
 # external dependencies
-futures.workspace = true
+futures = { workspace = true, optional = true }
+log = { workspace = true, optional = true }
 poise.workspace = true
