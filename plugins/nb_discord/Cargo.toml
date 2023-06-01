@@ -1,19 +1,26 @@
+# Copyright 2023 Atakku <https://atakku.dev>
+#
+# This project is dual licensed under MIT and Apache.
+
 [package]
 name = "nb_discord"
 version = "0.0.0"
 edition.workspace = true
 license.workspace = true
 
+[features]
+schema = ["dep:sea-query"]
+plugin = ["schema", "nbf/plugin", "nb_sqlx/plugin", "nb_poise/plugin", "dep:log", "dep:poise", "dep:sea-query-binder", "dep:sqlx"]
+
 [dependencies]
 # neko.bot framework
-nbf = { workspace = true, features = ["plugins"] }
+nbf = { workspace = true, optional = true }
 # neko.bot plugins
-nb_lifecycle.workspace = true
-nb_poise.workspace = true
-nb_sqlx = { workspace = true, features = ["plugin", "postgres"] }
+nb_poise = { workspace = true, optional = true }
+nb_sqlx = { workspace = true, optional = true }
 # external dependencies
-log.workspace = true
-poise.workspace = true
-sea-query.workspace = true
-sea-query-binder.workspace = true
-sqlx.workspace = true
+log = { workspace = true, optional = true }
+poise = { workspace = true, optional = true }
+sea-query = { workspace = true, optional = true }
+sea-query-binder = { workspace = true, optional = true }
+sqlx = { workspace = true, optional = true }
