@@ -1,11 +1,19 @@
+# Copyright 2023 Atakku <https://atakku.dev>
+#
+# This project is dual licensed under MIT and Apache.
+
 [package]
 name = "nb_scheduler"
 version = "0.0.0"
 edition.workspace = true
 license.workspace = true
 
+[features]
+plugin = ["nbf/plugin", "dep:log"]
+
 [dependencies]
 # neko.bot framework
-nbf = { workspace = true, features = ["plugins"] }
+nbf = { workspace = true, optional = true }
 # external dependencies
-tokio-cron-scheduler.workspace = true
+log = { workspace = true, optional = true }
+#tokio-cron-scheduler.workspace = true

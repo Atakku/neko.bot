@@ -2,12 +2,7 @@
 //
 // This project is dual licensed under MIT and Apache.
 
-use nbf::{Framework, Plugin, R};
-
-pub struct VRCPlugin;
-
-impl Plugin for VRCPlugin {
-  fn init(self, _: &mut Framework) -> R {
-    Ok(())
-  }
-}
+#[cfg(feature = "plugin")]
+mod plugin;
+#[cfg(feature = "plugin")]
+pub use plugin::*;
