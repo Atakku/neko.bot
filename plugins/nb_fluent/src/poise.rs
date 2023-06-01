@@ -19,88 +19,64 @@ pub(crate) fn localize_commands(state: ArcState) -> HR {
     let mut state_mut = state.write().await;
     let mut cmds = state_mut.take::<Vec<nb_poise::Cmd>>()?;
     let bundles = state_mut.borrow::<FluentBundles>()?;
+    if let Some(fb) = bundles.get("en-US") {
+      for loc in LOCS {
+        log::trace!("Adding default locale 'en-US'");
+        for cmd in &mut cmds {
+          log::trace!("Adding locale 'en-US' to {}", cmd.name);
+          crate::poise::apply_cmd_loc(cmd, loc, fb, None, loc == "en-US")
+        }
+      }
+    } else {
+      log::warn!("Default locale 'en-US' was not found");
+    }
     for (loc, fb) in bundles
-      .into_iter()
-      .filter(|(l, _)| LOCS.contains(&l.as_str()))
+      .iter()
+      .filter(|(l, _)| LOCS.contains(&l.as_str()) && l != &"en-US")
     {
       log::info!("Adding locale '{loc}' to {} commands", cmds.len());
       for cmd in &mut cmds {
         log::trace!("Adding locale '{loc}' to {}", cmd.name);
-        crate::poise::apply_cmd_loc(cmd, loc, fb, None, false)
+        crate::poise::apply_cmd_loc(cmd, loc, fb, None, true)
       }
-    }
-    if let Some(fb) = bundles.get("en-US") {
-      log::trace!("Adding default locale 'en-US'");
-      for cmd in &mut cmds {
-        log::trace!("Adding locale 'en-US' to {}", cmd.name);
-        crate::poise::apply_cmd_loc(cmd, "en-US", fb, None, true)
-      }
-    } else {
-      log::warn!("Default locale 'en-US' was not found");
     }
     state_mut.put(cmds);
     Ok(())
   })
 }
 
-fn apply_cmd_loc(
-  cmd: &mut Cmd,
-  loc: &str,
-  fb: &FluentBundle,
-  parent_path: Option<&str>,
-  default: bool,
-) {
+fn apply_cmd_loc(cmd: &mut Cmd, loc: &str, fb: &FluentBundle, parent_path: Option<&str>, log_missing: bool) {
   let path = format!("{}_{}", parent_path.unwrap_or("cmd"), cmd.name);
   // Skip trying to localize group commands
   if !cmd.subcommand_required {
-    if let Some(name) = try_cmd_loc(loc, fb, &path, None, true) {
-      if default {
-        cmd.name = name.into();
-      } else {
-        cmd.name_localizations.insert(loc.into(), name.into());
-      }
+    if let Some(name) = try_cmd_loc(loc, fb, &path, None, true, log_missing) {
+      cmd.name_localizations.insert(loc.into(), name.into());
     }
-    if let Some(desc) = try_cmd_loc(loc, fb, &path, Some("desc"), false) {
-      if default {
-        cmd.description = Some(desc.into());
-      } else {
-        cmd
-          .description_localizations
-          .insert(loc.into(), desc.into());
-      }
+    if let Some(desc) = try_cmd_loc(loc, fb, &path, Some("desc"), false, log_missing) {
+      cmd
+        .description_localizations
+        .insert(loc.into(), desc.into());
     }
     for prm in &mut cmd.parameters {
       let prm_path = format!("prm_{}", &prm.name);
-      if let Some(name) = try_cmd_loc(loc, fb, &path, Some(&prm_path), true) {
-        if default {
-          prm.name = name.into();
-        } else {
-          prm.name_localizations.insert(loc.into(), name.into());
-        }
+      if let Some(name) = try_cmd_loc(loc, fb, &path, Some(&prm_path), true, log_missing) {
+        prm.name_localizations.insert(loc.into(), name.into());
       }
-      if let Some(desc) = try_cmd_loc(loc, fb, &path, Some(&format!("{prm_path}_desc")), false) {
-        if default {
-          prm.description = Some(desc.into());
-        } else {
-          prm
-            .description_localizations
-            .insert(loc.into(), desc.into());
-        }
+      if let Some(desc) = try_cmd_loc(loc, fb, &path, Some(&format!("{prm_path}_desc")), false, log_missing) {
+        prm
+          .description_localizations
+          .insert(loc.into(), desc.into());
       }
       for cho in &mut prm.choices {
         let path = format!("cho_{}", &prm.name);
-        if let Some(name) = try_cmd_loc(loc, fb, &path, Some(&cho.name), false) {
-          if default {
-            cho.name = name.into();
-          } else {
-            cho.localizations.insert(loc.into(), name.into());
-          }
+        if let Some(name) = try_cmd_loc(loc, fb, &path, Some(&cho.name), false, log_missing) {
+          cho.localizations.insert(loc.into(), name.into());
         }
       }
     }
   }
   for sub in &mut cmd.subcommands {
-    apply_cmd_loc(sub, loc, fb, Some(&path), default);
+    apply_cmd_loc(sub, loc, fb, Some(&path), log_missing);
   }
 }
 
@@ -110,6 +86,7 @@ fn try_cmd_loc<'a>(
   path: &str,
   attr: Option<&str>,
   lc: bool,
+  log_missing: bool
 ) -> Option<String> {
   log::trace!("try_cmd_loc()");
   let log_path = attr
@@ -122,7 +99,7 @@ fn try_cmd_loc<'a>(
     } else {
       log::error!("Locale '{locale}' contains uppercase characters in '{log_path}'")
     }
-  } else {
+  } else if log_missing {
     log::warn!("Locale '{locale}' is missing '{log_path}'")
   }
   return None;
