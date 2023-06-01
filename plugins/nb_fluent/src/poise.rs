@@ -73,7 +73,6 @@ fn apply_cmd_loc(
       let prm_path = format!("prm_{}", &prm.name);
       if let Some(name) = try_cmd_loc(loc, fb, &path, Some(&prm_path), true) {
         if default {
-          log::error!("{} -> {}", prm.name, name);
           prm.name = name.into();
         } else {
           prm.name_localizations.insert(loc.into(), name.into());
