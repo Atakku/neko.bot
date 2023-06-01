@@ -16,6 +16,7 @@ impl Default for LifecyclePlugin {
 
 impl Plugin for LifecyclePlugin {
   fn init(self, fw: &mut Framework) -> R {
+    log::trace!("LifecyclePlugin::init()");
     fw.state.put(LifecycleHooks::default());
     Ok(())
   }

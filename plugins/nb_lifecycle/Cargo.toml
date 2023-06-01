@@ -10,7 +10,7 @@ license.workspace = true
 
 [features]
 framework = ["nbf/framework", "dep:tokio"]
-plugin = ["framework", "nbf/plugin"]
+plugin = ["framework", "nbf/plugin", "dep:log"]
 
 [dependencies]
 # neko.bot framework
