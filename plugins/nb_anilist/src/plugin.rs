@@ -8,6 +8,7 @@ pub struct AnilistPlugin;
 
 impl Plugin for AnilistPlugin {
   fn init(self, _: &mut Framework) -> R {
+    log::trace!("AnilistPlugin::init()");
     Ok(())
   }
 }

@@ -5,8 +5,10 @@ edition.workspace = true
 license.workspace = true
 
 [features]
-plugin = ["nbf/plugin"]
+plugin = ["nbf/plugin", "dep:log"]
 
 [dependencies]
 # neko.bot framework
 nbf = { workspace = true, optional = true }
+# external dependencies
+log = { workspace = true, optional = true }

@@ -8,6 +8,7 @@ pub struct CachePlugin;
 
 impl Plugin for CachePlugin {
   fn init(self, _: &mut Framework) -> R {
+    log::trace!("CachePlugin::init()");
     Ok(())
   }
 }
