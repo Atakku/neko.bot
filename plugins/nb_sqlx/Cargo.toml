@@ -1,3 +1,7 @@
+# Copyright 2023 Atakku <https://atakku.dev>
+#
+# This project is dual licensed under MIT and Apache.
+
 [package]
 name = "nb_sqlx"
 version = "0.0.0"
@@ -5,7 +9,8 @@ edition.workspace = true
 license.workspace = true
 
 [features]
-plugin = ["nbf/plugins"]
+plugin = ["nbf/plugin", "dep:log"]
+# re-export features
 mssql = ["sqlx/mssql"]
 mysql = ["sqlx/mysql"]
 postgres = ["sqlx/postgres"]
@@ -13,6 +18,7 @@ sqlite = ["sqlx/sqlite"]
 
 [dependencies]
 # neko.bot framework
-nbf.workspace = true
+nbf = { workspace = true, optional = true }
 # external dependencies
+log = { workspace = true, optional = true }
 sqlx = { workspace = true, features = [ "runtime-tokio-native-tls" ]}
