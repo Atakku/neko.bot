@@ -5,7 +5,7 @@
 //TODO: REWRITE
 use std::path::Path;
 
-use askama::{Template, filters::format};
+use askama::{filters::format, Template};
 use nbf::{Res, R};
 use resvg::{
   tiny_skia::{Pixmap, Transform},

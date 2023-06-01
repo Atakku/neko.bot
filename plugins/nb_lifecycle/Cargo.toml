@@ -5,8 +5,9 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-# neko.bot Framework
+# neko.bot framework
 nbf = { workspace = true, features = ["plugins"] }
-# External dependencies
+# external dependencies
 futures.workspace = true
 futures-locks.workspace = true
+tokio.workspace = true

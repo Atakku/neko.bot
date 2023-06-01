@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "macabeus.vscode-fluent",
+    "tamasfe.even-better-toml",
+    "dustypomerleau.rust-syntax",
+    "rust-lang.rust-analyzer"
+  ]
+}

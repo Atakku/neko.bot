@@ -4,7 +4,7 @@
 
 #![feature(async_fn_in_trait)]
 
-use futures::future::{join_all, LocalBoxFuture};
+use futures::future::{join_all, BoxFuture, LocalBoxFuture};
 use futures_locks::RwLock;
 use nbf::{Framework, Plugin, Res, SharedData, State, R};
 
@@ -36,11 +36,15 @@ impl ArcStateHelper for ArcState {
   }
 }
 
-pub type Hook = fn(ArcState) -> LocalBoxFuture<'static, R>;
+pub type HR = LocalBoxFuture<'static, R>;
+pub type Hook = fn(ArcState) -> HR;
+
+pub type MHR = BoxFuture<'static, R>;
+pub type MainHook = fn(ArcState) -> MHR;
 
 pub struct LifecycleHooks {
   pre: Vec<Hook>,
-  main: Vec<Hook>,
+  main: Vec<MainHook>,
   post: Vec<Hook>,
 }
 
@@ -71,7 +75,7 @@ impl Plugin for LifecyclePlugin {
 
 pub trait LifecycleFramework {
   fn pre_hook(&mut self, hook: Hook) -> Res<&mut Framework>;
-  fn main_hook(&mut self, hook: Hook) -> Res<&mut Framework>;
+  fn main_hook(&mut self, hook: MainHook) -> Res<&mut Framework>;
   fn post_hook(&mut self, hook: Hook) -> Res<&mut Framework>;
   async fn run(self) -> R;
 }
@@ -81,7 +85,7 @@ impl LifecycleFramework for Framework {
     self.state.borrow_mut::<LifecycleHooks>()?.pre.push(hook);
     Ok(self)
   }
-  fn main_hook(&mut self, hook: Hook) -> Res<&mut Framework> {
+  fn main_hook(&mut self, hook: MainHook) -> Res<&mut Framework> {
     self.state.borrow_mut::<LifecycleHooks>()?.main.push(hook);
     Ok(self)
   }
@@ -94,16 +98,23 @@ impl LifecycleFramework for Framework {
     let mut state = self.state;
     let hooks = state.take::<LifecycleHooks>()?;
     let state = RwLock::new(state);
-    run_hooks(hooks.pre, &state).await?;
-    run_hooks(hooks.main, &state).await?;
-    run_hooks(hooks.post, &state).await?;
+    run_sequential(hooks.pre, &state).await?;
+    run_parallel(hooks.main, &state).await?;
+    run_sequential(hooks.post, &state).await?;
     Ok(())
   }
 }
 
-async fn run_hooks(hooks: Vec<Hook>, state: &ArcState) -> R {
-  for res in join_all(hooks.into_iter().map(|h| (h)(state.clone()))).await {
-    res?
+async fn run_sequential(hooks: Vec<Hook>, state: &ArcState) -> R {
+  for hook in hooks {
+    (hook)(state.clone()).await?;
+  }
+  Ok(())
+}
+
+async fn run_parallel(hooks: Vec<MainHook>, state: &ArcState) -> R {
+  for res in join_all(hooks.into_iter().map(|h| tokio::spawn((h)(state.clone())))).await {
+    res??
   }
   Ok(())
 }

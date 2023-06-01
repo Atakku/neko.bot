@@ -5,17 +5,17 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-# neko.bot Framework
+# neko.bot framework
 nbf = { workspace = true, features = ["plugins"] }
 # neko.bot Libraries
 nbl_steam_api.workspace = true
-# neko.bot Plugins
+# neko.bot plugins
 nb_discord.workspace = true
-nb_fluent.workspace = true
+nb_fluent = { workspace = true, features = ["framework", "poise"]}
 nb_lifecycle.workspace = true
 nb_poise.workspace = true
 nb_sqlx.workspace = true
-# External dependencies
+# external dependencies
 chrono.workspace = true
 itertools.workspace = true
 log.workspace = true

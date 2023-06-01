@@ -36,7 +36,6 @@ impl Default for SteamPlugin {
   }
 }
 
-
 #[derive(RustEmbed)]
 #[folder = "locale"]
 struct SteamLocale;
@@ -50,7 +49,6 @@ impl Plugin for SteamPlugin {
     fw.require_plugin::<nb_fluent::FluentPlugin>()?;
     fw.add_fluent_resources::<SteamLocale>()?;
     fw.require_plugin::<nb_poise::PoisePlugin>()?;
-    fw.add_command(update())?;
     fw.add_command(cmd::steam())?;
     Ok(())
   }

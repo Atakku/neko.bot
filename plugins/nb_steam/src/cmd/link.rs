@@ -21,7 +21,8 @@ use nb_discord::schema::Members;
   prefix_command,
   slash_command,
   owners_only,
-  subcommands("add", "missing")
+  subcommands("add", "missing"),
+  subcommand_required
 )]
 pub async fn link(_: Ctx<'_>) -> R {
   Ok(())

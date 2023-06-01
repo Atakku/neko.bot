@@ -29,7 +29,9 @@ pub(crate) async fn apps(ctx: Ctx<'_>, global: Option<bool>, user: Option<UserId
   let mut msg = ctx
     .send(|b| {
       b.attachment(AttachmentType::Path(Path::new("empty.png")))
-        .components(|b| b.create_action_row(|b| pagination_buttons(b, 0, 0, false, "pg_next".into())))
+        .components(|b| {
+          b.create_action_row(|b| pagination_buttons(b, 0, 0, false, "pg_next".into()))
+        })
     })
     .await?
     .into_message()
