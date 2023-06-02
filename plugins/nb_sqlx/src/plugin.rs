@@ -10,8 +10,8 @@ use sqlx::{pool::PoolOptions, Database};
 pub struct SqlxPlugin<T>
 where T: Database
 {
-  db_url: String,
-  opts: PoolOptions<T>,
+  pub db_url: String,
+  pub opts: PoolOptions<T>,
 }
 
 impl<T> Default for SqlxPlugin<T>
