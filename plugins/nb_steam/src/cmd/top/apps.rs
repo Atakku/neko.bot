@@ -30,7 +30,7 @@ pub(crate) async fn apps(ctx: Ctx<'_>, global: Option<bool>, user: Option<UserId
     .send(|b| {
       b.attachment(AttachmentType::Path(Path::new("empty.png")))
         .components(|b| {
-          b.create_action_row(|b| pagination_buttons(b, 0, 0, false, "pg_next".into()))
+          b.create_action_row(|b| pagination_buttons(b, 0, 0, true, "pg_disp".into()))
         })
     })
     .await?
@@ -171,10 +171,14 @@ fn pagination_buttons(
     .disabled(loading || page == 0)
   });
   b.create_button(|b| {
-    b.custom_id(format!("pg_disp"))
-      .style(ButtonStyle::Secondary)
-      .label(format!("{}/{pages}", page + 1))
-      .disabled(true)
+    if event == "pg_disp" && loading {
+      b.emoji(l.clone())
+    } else {
+      b.label(format!("{}/{pages}", page + 1))
+    }
+    .custom_id(format!("pg_disp"))
+    .style(ButtonStyle::Secondary)
+    .disabled(true)
   });
   b.create_button(|b| {
     if event == "pg_next" && loading {

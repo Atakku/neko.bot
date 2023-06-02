@@ -10,9 +10,12 @@ license.workspace = true
 
 [features]
 plugin = ["nbf/plugin", "dep:log"]
+poise = ["plugin", "dep:nb_poise"]
 
 [dependencies]
 # neko.bot framework
 nbf = { workspace = true, optional = true }
+# neko.bot plugins
+nb_poise = { workspace = true, optional = true }
 # external dependencies
 log = { workspace = true, optional = true }

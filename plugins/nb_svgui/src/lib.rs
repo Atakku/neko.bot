@@ -6,3 +6,8 @@
 mod plugin;
 #[cfg(feature = "plugin")]
 pub use plugin::*;
+
+#[cfg(feature = "poise")]
+mod poise;
+#[cfg(feature = "poise")]
+pub use poise::*;

@@ -23,12 +23,12 @@ where T: Template {
   let mut tree = Tree::from_str(&template.render()?, &Options::default()).unwrap();
   tree.convert_text(&fontdb);
   let mut pixmap = Pixmap::new(
-    tree.size.width().round() as u32,
-    tree.size.height().round() as u32,
+  (tree.size.width()/2.5).round() as u32 ,
+    (tree.size.height()/2.5).round() as u32,
   )
   .unwrap();
   let retree = resvg::Tree::from_usvg(&tree);
-  retree.render(Transform::default(), &mut pixmap.as_mut());
+  retree.render(Transform::from_scale(0.4, 0.4), &mut pixmap.as_mut());
   Ok(pixmap.encode_png()?)
 }
 
