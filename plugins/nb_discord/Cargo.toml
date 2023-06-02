@@ -27,8 +27,7 @@ nbf = { workspace = true, optional = true, features = ["plugin"] }
 # neko.bot plugins
 nb_poise = { workspace = true, optional = true, features = ["plugin"] }
 nb_sqlx = { workspace = true, optional = true, features = [
-  "plugin",
-  "postgres",
+  "plugin"
 ] }
 # external dependencies
 log = { workspace = true, optional = true }
