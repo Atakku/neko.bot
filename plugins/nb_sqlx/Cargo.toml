@@ -21,4 +21,4 @@ sqlite = ["sqlx/sqlite"]
 nbf = { workspace = true, optional = true }
 # external dependencies
 log = { workspace = true, optional = true }
-sqlx = { workspace = true, features = [ "runtime-tokio-native-tls" ]}
+sqlx = { workspace = true }

@@ -17,3 +17,5 @@ nb_vrchat = { workspace = true, features = ["plugin"] }
 pretty_env_logger.workspace = true
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 log = { workspace = true, features = ["release_max_level_warn"] }
+# Enabling runtime features
+sqlx = { workspace = true, features = [ "runtime-tokio-native-tls" ]}
