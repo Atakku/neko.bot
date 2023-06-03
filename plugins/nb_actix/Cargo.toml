@@ -3,21 +3,19 @@
 # This project is dual licensed under MIT and Apache.
 
 [package]
-name = "nb_poise"
+name = "nb_actix"
 version = "0.0.0"
 edition.workspace = true
 license.workspace = true
 
 [features]
-framework = ["nbf/framework"]
-plugin = ["framework", "nbf/plugin", "dep:futures", "dep:log"]
+plugin = ["nbf/plugin", "dep:actix-web", "dep:log"]
 
 [dependencies]
 # neko.bot framework
-nbf = { workspace = true }
-# neko.bot plugins
-nb_lifecycle = { workspace = true }
+nbf = { workspace = true, optional = true }
+# neko.bot modules
+nb_lifecycle = { workspace = true, optional = true }
 # external dependencies
-futures = { workspace = true, optional = true }
+actix-web = { workspace = true, optional = true }
 log = { workspace = true, optional = true }
-poise.workspace = true

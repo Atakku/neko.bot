@@ -8,12 +8,9 @@ version = "0.0.0"
 edition.workspace = true
 license.workspace = true
 
-[features]
-plugin = ["nbf/plugin", "dep:log", "dep:sqlx"]
-
 [dependencies]
 # neko.bot framework
-nbf = { workspace = true, optional = true }
+nbf = { workspace = true, features = ["plugin"] }
 # external dependencies
-log = { workspace = true, optional = true }
-sqlx = { workspace = true, optional = true  }
+log.workspace = true
+sqlx.workspace = true

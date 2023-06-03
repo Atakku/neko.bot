@@ -10,7 +10,7 @@ nbf = { workspace = true, features = ["plugin"] }
 # neko.bot plugins
 nb_anilist = { workspace = true, features = ["plugin"] }
 nb_discord = { workspace = true, features = ["plugin"] }
-nb_lifecycle = { workspace = true, features = ["plugin"] }
+nb_lifecycle = { workspace = true }
 nb_steam = { workspace = true, features = ["plugin"] }
 nb_vrchat = { workspace = true, features = ["plugin"] }
 # external dependencies

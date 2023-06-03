@@ -10,8 +10,8 @@ license.workspace = true
 
 [features]
 framework = ["nbf/framework", "dep:log", "dep:rust-embed"]
-plugin = ["nbf/plugin", "nb_lifecycle/framework", "dep:log"]
-poise = ["plugin", "dep:nb_poise", "dep:nb_lifecycle"]
+plugin = ["nbf/plugin", "dep:nb_lifecycle", "dep:log"]
+poise = ["plugin", "dep:nb_poise"]
 
 [dependencies]
 # neko.bot framework

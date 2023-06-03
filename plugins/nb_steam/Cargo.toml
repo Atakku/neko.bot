@@ -18,7 +18,7 @@ plugin = [
   "nb_fluent/framework",
   "nb_fluent/poise",
   "nb_poise/plugin",
-  "nb_sqlx/plugin",
+  "dep:nb_sqlx",
   "dep:chrono",
   "dep:itertools",
   "dep:log",
