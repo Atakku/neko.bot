@@ -34,25 +34,12 @@ pub enum TopQueryArgs {
     guild_id: i64,
     global: bool,
     app_id: Option<i32>,
+    appcount: bool,
   },
 }
 
 pub fn top_query_builder(args: TopQueryArgs) -> SelectStatement {
   let mut qb = Query::select();
-  qb.expr_as(
-    Func::sum(Expr::col((PlayData::Table, PlayData::mins))),
-    Alias::new("mins_sum"),
-  );
-  qb.expr_window_as(
-    Func::cust(RowNumber),
-    WindowStatement::new()
-      .order_by_expr(
-        Expr::sum(Expr::col((PlayData::Table, PlayData::mins))),
-        Order::Desc,
-      )
-      .to_owned(),
-    Alias::new("row_num"),
-  );
   qb.from(PlayData::Table);
   match args {
     TopQueryArgs::TopApps {
@@ -60,6 +47,20 @@ pub fn top_query_builder(args: TopQueryArgs) -> SelectStatement {
       global,
       user_id,
     } => {
+      qb.expr_as(
+        Func::sum(Expr::col((PlayData::Table, PlayData::mins))),
+        Alias::new("mins_sum"),
+      );
+      qb.expr_window_as(
+        Func::cust(RowNumber),
+        WindowStatement::new()
+          .order_by_expr(
+            Expr::sum(Expr::col((PlayData::Table, PlayData::mins))),
+            Order::Desc,
+          )
+          .to_owned(),
+        Alias::new("row_num"),
+      );
       qb.columns([(Apps::Table, Apps::id), (Apps::Table, Apps::name)]);
       qb.from(Apps::Table);
       qb.and_where(Expr::col((Apps::Table, Apps::id)).equals((PlayData::Table, PlayData::app_id)));
@@ -84,6 +85,20 @@ pub fn top_query_builder(args: TopQueryArgs) -> SelectStatement {
       qb.group_by_col((Apps::Table, Apps::id));
     }
     TopQueryArgs::TopGuilds { app_id } => {
+      qb.expr_as(
+        Func::sum(Expr::col((PlayData::Table, PlayData::mins))),
+        Alias::new("mins_sum"),
+      );
+      qb.expr_window_as(
+        Func::cust(RowNumber),
+        WindowStatement::new()
+          .order_by_expr(
+            Expr::sum(Expr::col((PlayData::Table, PlayData::mins))),
+            Order::Desc,
+          )
+          .to_owned(),
+        Alias::new("row_num"),
+      );
       qb.columns([(Guilds::Table, Guilds::id), (Guilds::Table, Guilds::name)]);
       qb.and_where(
         Expr::col((Accounts::Table, Accounts::id)).equals((PlayData::Table, PlayData::acc_id)),
@@ -107,7 +122,39 @@ pub fn top_query_builder(args: TopQueryArgs) -> SelectStatement {
       guild_id,
       global,
       app_id,
+      appcount,
     } => {
+      if appcount {
+        qb.expr_as(
+          Func::count(Expr::col((PlayData::Table, PlayData::app_id))),
+          Alias::new("mins_sum"),
+        );
+        qb.expr_window_as(
+          Func::cust(RowNumber),
+          WindowStatement::new()
+            .order_by_expr(
+              Expr::count(Expr::col((PlayData::Table, PlayData::app_id))),
+              Order::Desc,
+            )
+            .to_owned(),
+          Alias::new("row_num"),
+        );
+      } else {
+        qb.expr_as(
+          Func::sum(Expr::col((PlayData::Table, PlayData::mins))),
+          Alias::new("mins_sum"),
+        );
+        qb.expr_window_as(
+          Func::cust(RowNumber),
+          WindowStatement::new()
+            .order_by_expr(
+              Expr::sum(Expr::col((PlayData::Table, PlayData::mins))),
+              Order::Desc,
+            )
+            .to_owned(),
+          Alias::new("row_num"),
+        );
+      }
       qb.columns([(Users::Table, Users::id), (Users::Table, Users::username)]);
       qb.from(Users::Table);
       qb.from(Accounts::Table);

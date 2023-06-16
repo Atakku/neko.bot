@@ -12,7 +12,7 @@ use crate::query::{paged_query, top_query_builder, TopQueryArgs};
 
 // Top users
 #[poise::command(prefix_command, slash_command, guild_only)]
-pub(crate) async fn users(ctx: Ctx<'_>, global: Option<bool>, app: Option<String>) -> R {
+pub(crate) async fn users(ctx: Ctx<'_>, global: Option<bool>, app: Option<String>, appcount: Option<bool>) -> R {
   // TODO: move into shared
   let regex: Regex = Regex::new(r"\d+")?;
   let Some(guild_id) = ctx.guild_id() else { return Ok(())};
@@ -25,6 +25,7 @@ pub(crate) async fn users(ctx: Ctx<'_>, global: Option<bool>, app: Option<String
         .get(0)
         .and_then(|m| m.as_str().parse().ok())
     }),
+    appcount: appcount.unwrap_or(false),
   })
   .to_owned();
   let pool = ctx.data().read().await.borrow::<PgPool>()?.clone();
@@ -36,7 +37,7 @@ pub(crate) async fn users(ctx: Ctx<'_>, global: Option<bool>, app: Option<String
         "The bot is currenly being rewritten. Fancy UI will come back shortly\n```{}```",
         data
           .into_iter()
-          .map(|o| format!("#{} | {} | {}\n", o.row_num, o.mins_sum / 60, o.username))
+          .map(|o| format!("#{} | {} | {}\n", o.row_num, if  appcount.unwrap_or(false) { o.mins_sum} else {o.mins_sum / 60}, o.username))
           .collect::<String>()
       ))
     })
