@@ -139,7 +139,7 @@ async fn update_roles(ctx: Ctx<'_>) -> R {
 #[derive(FromRow, Clone)]
 #[allow(dead_code)]
 pub struct GameRow {
-  pub id: i32,
+  pub app_id: i32,
 }
 
 async fn query_games(db: &PgPool, u: u64) -> Res<Vec<GameRow>> {
