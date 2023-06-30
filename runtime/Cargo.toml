@@ -19,3 +19,6 @@ tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 log = { workspace = true, features = ["release_max_level_warn"] }
 # Enabling runtime features
 sqlx = { workspace = true, features = [ "runtime-tokio-native-tls" ]}
+poise.workspace = true
+nb_poise = { workspace = true, features = ["framework"]}
+nb_sqlx.workspace = true
