@@ -166,7 +166,7 @@ async fn query_games(db: &PgPool, u: u64) -> Res<Vec<GameRow>> {
 fn get_game_roles(games: Vec<GameRow>) -> Vec<RoleId> {
   games
     .iter()
-    .filter_map(|f| match f.id {
+    .filter_map(|f| match f.app_id {
       730 => Some(1124283633415503983),
       427520 => Some(1124283636942905344),
       227300 => Some(1124283645109219468),
