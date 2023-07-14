@@ -24,8 +24,6 @@ async fn main() -> R {
   let mut fw = Framework::new();
   fw.init_plugin(nb_steam::SteamPlugin::default())?;
 
-  fw.add_intents(GatewayIntents::GUILD_MEMBERS);
-  fw.add_intents(GatewayIntents::GUILD_MESSAGES);
   fw.add_event_handler(|ctx, e, _fctx, s| {
     Box::pin(async move {
       let db = s.read().await.borrow::<PgPool>()?.clone();
@@ -52,7 +50,7 @@ async fn main() -> R {
                 c.create_action_row(|r| {
                   r.create_button(|b| {
                     b.url(format!("https://discord.com/users/{}", user.id))
-                      .label("Profile")
+                      .label("Profile").custom_id("profile_button")
                   })
                 })
               })
@@ -92,7 +90,7 @@ async fn main() -> R {
                 c.create_action_row(|r| {
                   r.create_button(|b| {
                     b.url(format!("https://discord.com/users/{}", user.id))
-                      .label("Profile")
+                      .label("Profile").custom_id("profile_button")
                   })
                 })
               })
@@ -107,8 +105,8 @@ async fn main() -> R {
 
   fw.add_command(update_roles())?;
   // WIP
-  fw.init_plugin(nb_anilist::AnilistPlugin)?;
-  fw.init_plugin(nb_vrchat::VRCPlugin)?;
+  //fw.init_plugin(nb_anilist::AnilistPlugin)?;
+  //fw.init_plugin(nb_vrchat::VRCPlugin)?;
 
   fw.run().await?;
   Ok(())
