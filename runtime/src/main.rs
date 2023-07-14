@@ -46,14 +46,6 @@ async fn main() -> R {
                 e.colour(Colour::from_rgb(139, 195, 74));
                 e.description(format!("Welcome <@{}> to the server!", user.id))
               })
-              .components(|c| {
-                c.create_action_row(|r| {
-                  r.create_button(|b| {
-                    b.url(format!("https://discord.com/users/{}", user.id))
-                      .label("Profile").custom_id("profile_button")
-                  })
-                })
-              })
             })
             .await?;
           new_member
@@ -85,14 +77,6 @@ async fn main() -> R {
                 });
                 e.colour(Colour::from_rgb(244, 67, 54));
                 e.description(format!("<@{}> has left the server!", user.id))
-              })
-              .components(|c| {
-                c.create_action_row(|r| {
-                  r.create_button(|b| {
-                    b.url(format!("https://discord.com/users/{}", user.id))
-                      .label("Profile").custom_id("profile_button")
-                  })
-                })
               })
             })
             .await?;
