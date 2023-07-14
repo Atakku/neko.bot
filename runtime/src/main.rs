@@ -8,7 +8,7 @@ use nb_steam::{Accounts, PlayData};
 use nbf::{Framework, PluginLoader, Res, R};
 use poise::{
   futures_util::StreamExt,
-  serenity_prelude::{ChannelId, Colour, Role, RoleId, User},
+  serenity_prelude::{ChannelId, Colour, Role, RoleId, User, GatewayIntents},
   Event,
 };
 use sea_query::{Expr, PostgresQueryBuilder, Query};
@@ -24,6 +24,8 @@ async fn main() -> R {
   let mut fw = Framework::new();
   fw.init_plugin(nb_steam::SteamPlugin::default())?;
 
+  fw.add_intents(GatewayIntents::GUILD_MEMBERS);
+  fw.add_intents(GatewayIntents::GUILD_MESSAGES);
   fw.add_event_handler(|ctx, e, _fctx, s| {
     Box::pin(async move {
       let db = s.read().await.borrow::<PgPool>()?.clone();
